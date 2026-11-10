@@ -14,6 +14,7 @@ source "$SCRIPT_DIR/lib/report.sh"
 source "$SCRIPT_DIR/checks/ssh.sh"
 source "$SCRIPT_DIR/checks/firewall.sh"
 source "$SCRIPT_DIR/checks/ports.sh"
+source "$SCRIPT_DIR/checks/updates.sh"
 
 echo -e "${BOLD}Linux Hardening Auditor${NC}"
 echo "Host: $(hostname)  |  Date: $(date)"
@@ -21,5 +22,6 @@ echo "Host: $(hostname)  |  Date: $(date)"
 check_ssh
 check_firewall
 check_ports
+check_updates
 
 print_summary
