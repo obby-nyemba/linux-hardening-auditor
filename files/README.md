@@ -33,7 +33,7 @@ Score: 5/6 checks passed
 ## Quickstart
 
 ```bash
-git clone https://github.com/<your-username>/linux-hardening-auditor.git
+git clone https://github.com/obby-nyemba/linux-hardening-auditor.git
 cd linux-hardening-auditor
 chmod +x audit.sh checks/*.sh lib/*.sh
 ./audit.sh
