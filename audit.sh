@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # audit.sh — Linux Hardening Auditor
 # Runs a set of read-only security checks and reports a score with fixes.
-#
 # Usage: ./audit.sh
 # Safe to run as a normal user; some checks (permissions scan) are deeper
 # with sudo but the script will skip gracefully if not run as root.

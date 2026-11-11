@@ -99,19 +99,29 @@ check_network() {
     done
     echo ""
 
-    # Scan every device in parallel; each writes its open ports to its own file
+     # Scan every device; each writes its open ports to its own file
     local tmp p
     tmp=$(mktemp -d)
-    for h in $hosts; do
-        (
-            for p in $ports; do
-                if timeout 1 bash -c "echo >/dev/tcp/$h/$p" 2>/dev/null; then
-                    echo "$p" >> "$tmp/$h"
-                fi
-            done
-        ) &
-    done
-    wait
+    if command -v nmap >/dev/null 2>&1; then
+        echo "  Port scanner: nmap"
+        local plist=${ports// /,}
+        for h in $hosts; do
+            nmap -Pn -n --open -p "$plist" -oG - "$h" 2>/dev/null \
+                | grep -o '[0-9]*/open' | cut -d/ -f1 > "$tmp/$h"
+        done
+    else
+        echo "  Port scanner: bash (install nmap for faster, more accurate results)"
+        for h in $hosts; do
+            (
+                for p in $ports; do
+                    if timeout 1 bash -c "echo >/dev/tcp/$h/$p" 2>/dev/null; then
+                        echo "$p" >> "$tmp/$h"
+                    fi
+                done
+            ) &
+        done
+        wait
+    fi
 
     # Report: one result per device
     for h in $hosts; do

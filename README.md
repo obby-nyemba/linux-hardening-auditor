@@ -58,9 +58,11 @@ Every warning includes a `Fix:` line with what to change.
 - checks each device for 13 commonly risky open ports,
 - adds the results to your score.
 
-It needs only bash and standard Linux tools. It uses `ping` for discovery when installed and falls back to plain bash connections when it isn't.
+It needs only bash and standard Linux tools. If `nmap` is installed, it uses it for faster and more accurate port scanning, and it uses `ping` for discovery when available. Without them it falls back to plain bash connections.
 
-Limits: devices that are asleep or isolated by the router (common on phone hotspots and guest Wi-Fi) won't show up, and it only checks common ports, not all 65,535. For a full scan, use `nmap`.
+
+Limits: devices that are asleep or isolated by the router (common on phone hotspots and guest Wi-Fi) won't show up, and it only checks common ports, not all 65,535.For a full scan of all ports on one device, run `nmap -p- DEVICE_IP` yourself.
+
 
 You can also run it on its own: `./checks/network.sh`
 
