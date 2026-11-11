@@ -5,8 +5,8 @@ A read-only security checker for Linux. It runs a set of checks, tells you what'
 ## Quick start
 
 ```
-git clone https://github.com/YOURUSERNAME/REPONAME.git
-cd REPONAME
+git clone https://github.com/obby-nyemba/linux-hardening-auditor.git
+cd linux-hardening-auditor
 chmod +x audit.sh
 ./audit.sh
 ```
@@ -84,7 +84,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Each check is a single file under `check
 
 ## Releases
 
-See the [Releases page](https://github.com/YOURUSERNAME/REPONAME/releases) for version history and what changed in each one.
+See the [Releases page](https://github.com/obby-nyemba/linux-hardening-auditor/releases) for version history and what changed in each one.
 
 ## License
 
