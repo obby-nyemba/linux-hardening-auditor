@@ -1,71 +1,89 @@
 # Linux Hardening Auditor
 
-A small, dependency-free bash tool that audits a Linux machine for common
-security misconfigurations and tells you exactly how to fix each one.
+A read-only security checker for Linux. It runs a set of checks, tells you what's weak, and gives you the exact command to fix each problem. It ends with a score.
 
-No Docker, no Python, no agents — just bash and the tools already on your
-system (`ss`, `grep`, `ufw`/`firewalld`/`iptables`).
+## Quick start
 
 ```
-$ ./audit.sh
+git clone https://github.com/YOURUSERNAME/REPONAME.git
+cd REPONAME
+chmod +x audit.sh
+./audit.sh
+```
 
+To also scan other devices on your network:
+
+```
+./audit.sh --network
+```
+
+Only use `--network` on networks you own or have permission to test. It sends connection attempts to other devices.
+
+Safe to run as a normal user. Some checks go deeper with `sudo`, and the script skips gracefully if you're not root.
+
+## What it checks
+
+| Check | What it looks at |
+|---|---|
+| SSH | Root login allowed, password auth allowed, empty passwords permitted |
+| Firewall | Whether ufw / firewalld / nftables / iptables is active |
+| Open ports | Listening TCP ports, flags commonly-risky ones (Telnet, FTP, RDP, Redis, etc.) |
+| Pending updates | Outstanding package updates (pacman, apt, or dnf, auto-detected) |
+| Network devices | Opt-in with `--network`. Lists other devices on your LAN and flags risky open ports (Telnet, FTP, RDP, Redis, etc.) |
+
+## Example output
+
+```
 Linux Hardening Auditor
-Host: arch-vivobook  |  Date: Mon Nov 9 2026
+Host: mypc  |  Date: Wed Nov 11 2026
 
 == SSH Configuration ==
 ✅ PASS  Root login over SSH is disabled
 ⚠️  WARN  Password authentication is enabled
          Fix: Set up SSH keys, then set 'PasswordAuthentication no' in /etc/ssh/sshd_config
-✅ PASS  Empty passwords are not permitted over SSH
-
-== Firewall ==
-✅ PASS  ufw is active
-
-== Open Listening Ports ==
-  Listening TCP ports: 22 631
 
 ==================================
-Score: 4/5 checks passed
+Score: 1/2 checks passed
 ==================================
 ```
 
-## Quickstart
+Every warning includes a `Fix:` line with what to change.
 
-```bash
-git clone https://github.com/<your-username>/linux-hardening-auditor.git
-cd linux-hardening-auditor
-chmod +x audit.sh
-./audit.sh
-```
+## Network scan (opt-in)
 
-Runs fine as a normal user. No sudo required for v1's checks.
+`./audit.sh --network` adds a "Network Devices" section. It:
 
-## What it checks (v1)
+- finds your local network and the other devices on it,
+- lists each device with its IP, MAC address and hostname (your router is tagged),
+- checks each device for 13 commonly risky open ports,
+- adds the results to your score.
 
-| Check | What it looks for |
-|---|---|
-| SSH | Root login allowed, password auth allowed, empty passwords permitted |
-| Firewall | Whether ufw / firewalld / nftables / iptables is active |
-| Open ports | Listening TCP ports, flags commonly-risky ones (Telnet, FTP, RDP, Redis, etc.) |
+It needs only bash and standard Linux tools. It uses `ping` for discovery when installed and falls back to plain bash connections when it isn't.
+
+Limits: devices that are asleep or isolated by the router (common on phone hotspots and guest Wi-Fi) won't show up, and it only checks common ports, not all 65,535. For a full scan, use `nmap`.
+
+You can also run it on its own: `./checks/network.sh`
 
 ## Planned checks (good first issues)
 
 - World-writable files outside expected directories
 - Users with empty passwords (`/etc/shadow`)
 - `NOPASSWD` entries in sudoers
-- Pending security updates (distro-aware: pacman/apt/dnf)
 - Kernel version vs. current stable
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) — each check is a single file under
-`checks/`, so adding one is self-contained.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Each check is a single file under `checks/`, so adding one is self-contained.
 
 ## Design goals
 
 - **Zero dependencies** beyond bash and standard Linux tools
-- **Explains, not just flags** — every warning includes the exact fix command
-- **Read-only** — v1 never changes your system, only reports on it
-- **Distro-aware** where it matters (Arch/Debian package manager differences, etc.)
+- **Explains, not just flags**: every warning includes the exact fix command
+- **Read-only**: never changes your system, only reports on it
+- **Distro-aware** where it matters (pacman vs apt vs dnf, etc.)
+
+## Releases
+
+See the [Releases page](https://github.com/YOURUSERNAME/REPONAME/releases) for version history and what changed in each one.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
